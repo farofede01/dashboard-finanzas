@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Inicio{% endblock %}
+{% block content %}
+<div class="d-flex flex-column justify-content-center align-items-center vh-100">
+  <h1 class="mb-4">Bienvenido a FinanzasApp</h1>
+  <div>
+    <a href="{{ url_for('main.login') }}" class="btn btn-primary btn-lg me-3">
+      <i class="bi bi-box-arrow-in-right"></i> Ingresar
+    </a>
+    <a href="{{ url_for('main.registro') }}" class="btn btn-success btn-lg">
+      <i class="bi bi-person-plus"></i> Registrarse
+    </a>
+  </div>
+</div>
+{% endblock %}

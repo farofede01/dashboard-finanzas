@@ -1,0 +1,47 @@
+body {
+  background-color: #f8f9fa; /* gris claro */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h1, h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.navbar-brand {
+  font-weight: bold;
+  color: #00c853 !important; /* verde */
+}
+
+.table-success th {
+  background-color: #81c784 !important; /* verde suave para ingresos */
+}
+
+.table-danger th {
+  background-color: #e57373 !important; /* rojo suave para gastos */
+}
+
+.btn-primary {
+  background-color: #1976d2;
+  border: none;
+}
+
+.btn-success {
+  background-color: #2e7d32;
+  border: none;
+}
+
+.btn-danger {
+  background-color: #c62828;
+  border: none;
+}
+
+.btn-warning {
+  background-color: #f9a825;
+  border: none;
+}
+
+.alert-info {
+  background-color: #29b6f6;
+  color: white;
+}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Editar Registro{% endblock %}
+{% block content %}
+<h1 class="text-center mb-4">Editar Registro</h1>
+
+<form method="POST" class="mx-auto" style="max-width: 500px;">
+  <div class="mb-3">
+    <label class="form-label">Tipo:</label>
+    <select name="tipo" class="form-select">
+      <option value="Ingreso" {% if registro.tipo == "Ingreso" %}selected{% endif %}>Ingreso</option>
+      <option value="Gasto" {% if registro.tipo == "Gasto" %}selected{% endif %}>Gasto</option>
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Monto:</label>
+    <input type="number" name="monto" class="form-control" value="{{ registro.monto }}" required>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Descripción:</label>
+    <input type="text" name="descripcion" class="form-control" value="{{ registro.descripcion }}" required>
+  </div>
+
+  <button type="submit" class="btn btn-primary w-100">
+    <i class="bi bi-pencil-square"></i> Guardar cambios
+  </button>
+  <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary w-100 mt-2">
+    <i class="bi bi-x-circle"></i> Cancelar
+  </a>
+</form>
+
+<!-- Botón de eliminar -->
+<form action="{{ url_for('main.eliminar', id=registro.id) }}" method="POST" class="mx-auto mt-3" style="max-width: 500px;">
+  <button type="submit" class="btn btn-danger w-100"
+          onclick="return confirm('¿Seguro que querés eliminar este registro?');">
+    <i class="bi bi-trash"></i> Eliminar registro
+  </button>
+</form>
+{% endblock %}
