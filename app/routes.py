@@ -1,45 +1,51 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_bcrypt import Bcrypt
+from collections import defaultdict
 from .models import Usuario, Registro
 from . import db, login_manager
 
 main = Blueprint('main', __name__)
 bcrypt = Bcrypt()
 
-# Cargar usuario en sesión
+
+# ===== LOGIN MANAGER =====
 @login_manager.user_loader
 def load_user(user_id):
     return Usuario.query.get(int(user_id))
 
-# Página inicial
+
+# ===== HOME =====
 @main.route('/')
 def inicio():
     return render_template('inicio.html')
 
-# Registro de usuario
+
+# ===== REGISTRO =====
 @main.route('/registro', methods=['GET', 'POST'])
 def registro():
     if request.method == 'POST':
         nombre = request.form['nombre']
         email = request.form['email']
-        password = bcrypt.generate_password_hash(request.form['password']).decode('utf-8')
+        password = bcrypt.generate_password_hash(
+            request.form['password']
+        ).decode('utf-8')
 
-        # Verificar si ya existe el email
-        usuario_existente = Usuario.query.filter_by(email=email).first()
-        if usuario_existente:
-            flash("Ese email ya está registrado. Probá con otro.", "danger")
+        if Usuario.query.filter_by(email=email).first():
+            flash("Ese email ya está registrado.", "danger")
             return redirect(url_for('main.registro'))
 
-        nuevo_usuario = Usuario(nombre=nombre, email=email, password=password)
-        db.session.add(nuevo_usuario)
+        usuario = Usuario(nombre=nombre, email=email, password=password)
+        db.session.add(usuario)
         db.session.commit()
-        flash("Usuario creado con éxito. Ya podés iniciar sesión.", "success")
+
+        flash("Usuario creado correctamente.", "success")
         return redirect(url_for('main.login'))
 
     return render_template('registro.html')
 
-# Login de usuario
+
+# ===== LOGIN =====
 @main.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -49,95 +55,135 @@ def login():
 
         if usuario and bcrypt.check_password_hash(usuario.password, password):
             login_user(usuario)
-            flash("Sesión iniciada correctamente.", "success")
             return redirect(url_for('main.dashboard'))
-        else:
-            flash("Credenciales incorrectas. Revisá tu email y contraseña.", "danger")
-            return redirect(url_for('main.login'))
+
+        flash("Credenciales incorrectas.", "danger")
 
     return render_template('login.html')
 
-# Logout
+
+# ===== LOGOUT =====
 @main.route('/logout')
 @login_required
 def logout():
     logout_user()
-    flash("Sesión cerrada correctamente.", "info")
     return redirect(url_for('main.login'))
 
-# Dashboard con ingresos y gastos
+
+# ===== DASHBOARD =====
 @main.route('/dashboard')
 @login_required
 def dashboard():
-    ingresos = Registro.query.filter_by(tipo="Ingreso", usuario_id=current_user.id).all()
-    gastos = Registro.query.filter_by(tipo="Gasto", usuario_id=current_user.id).all()
+    ingresos = Registro.query.filter_by(
+        tipo="Ingreso",
+        usuario_id=current_user.id
+    ).order_by(Registro.fecha.desc()).all()
+
+    gastos = Registro.query.filter_by(
+        tipo="Gasto",
+        usuario_id=current_user.id
+    ).order_by(Registro.fecha.desc()).all()
 
     total_ingresos = sum(r.monto for r in ingresos)
     total_gastos = sum(r.monto for r in gastos)
     saldo = total_ingresos - total_gastos
 
-    return render_template('dashboard.html',
-                           ingresos=ingresos,
-                           gastos=gastos,
-                           total_ingresos=total_ingresos,
-                           total_gastos=total_gastos,
-                           saldo=saldo)
+    # ===== AGRUPAR POR MES (para gráfico línea) =====
+    balance_por_mes = defaultdict(float)
 
-# Formulario para nuevo registro
+    for r in ingresos:
+        mes = r.fecha.strftime("%Y-%m")
+        balance_por_mes[mes] += r.monto
+
+    for r in gastos:
+        mes = r.fecha.strftime("%Y-%m")
+        balance_por_mes[mes] -= r.monto
+
+    meses = list(balance_por_mes.keys())
+    balances = list(balance_por_mes.values())
+
+    # ===== AGRUPAR POR CATEGORIA (para gráfico pie) =====
+    gastos_por_categoria = defaultdict(float)
+
+    for g in gastos:
+        categoria = g.categoria if g.categoria else "Otros"
+        gastos_por_categoria[categoria] += g.monto
+
+    categorias = list(gastos_por_categoria.keys())
+    totales_categorias = list(gastos_por_categoria.values())
+
+    return render_template(
+        'dashboard.html',
+        ingresos=ingresos,
+        gastos=gastos,
+        total_ingresos=total_ingresos,
+        total_gastos=total_gastos,
+        saldo=saldo,
+        meses=meses,
+        balances=balances,
+        categorias=categorias,
+        totales_categorias=totales_categorias
+    )
+
+
+# ===== NUEVO REGISTRO =====
 @main.route('/nuevo', methods=['GET', 'POST'])
 @login_required
 def nuevo():
     if request.method == 'POST':
         tipo = request.form['tipo']
-        monto = int(request.form['monto'])
+        monto = float(request.form['monto'])
         descripcion = request.form['descripcion']
+        categoria = request.form['categoria']
 
-        nuevo_registro = Registro(
+        registro = Registro(
             tipo=tipo,
             monto=monto,
             descripcion=descripcion,
+            categoria=categoria,
             usuario_id=current_user.id
         )
-        db.session.add(nuevo_registro)
+
+        db.session.add(registro)
         db.session.commit()
-        flash("Registro agregado correctamente.", "success")
+
+        flash("Registro agregado.", "success")
         return redirect(url_for('main.dashboard'))
 
     return render_template('formulario.html')
 
-# Editar registro existente
+
+# ===== EDITAR =====
 @main.route('/editar/<int:id>', methods=['GET', 'POST'])
 @login_required
 def editar(id):
     registro = Registro.query.get_or_404(id)
 
-    # Solo permitir editar registros del usuario actual
     if registro.usuario_id != current_user.id:
-        flash("No tenés permiso para editar este registro.", "danger")
         return redirect(url_for('main.dashboard'))
 
     if request.method == 'POST':
         registro.tipo = request.form['tipo']
-        registro.monto = int(request.form['monto'])
+        registro.monto = float(request.form['monto'])
         registro.descripcion = request.form['descripcion']
+        registro.categoria = request.form['categoria']
+
         db.session.commit()
-        flash("Registro actualizado correctamente.", "success")
         return redirect(url_for('main.dashboard'))
 
     return render_template('editar.html', registro=registro)
 
-# Eliminar registro existente
+
+# ===== ELIMINAR =====
 @main.route('/eliminar/<int:id>', methods=['POST'])
 @login_required
 def eliminar(id):
     registro = Registro.query.get_or_404(id)
 
-    # Solo permitir eliminar registros del usuario actual
     if registro.usuario_id != current_user.id:
-        flash("No tenés permiso para eliminar este registro.", "danger")
         return redirect(url_for('main.dashboard'))
 
     db.session.delete(registro)
     db.session.commit()
-    flash("Registro eliminado correctamente.", "success")
+
     return redirect(url_for('main.dashboard'))

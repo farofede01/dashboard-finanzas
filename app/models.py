@@ -15,3 +15,5 @@ class Registro(db.Model):
     descripcion = db.Column(db.String(200), nullable=False)
     fecha = db.Column(db.DateTime, default=datetime.now)
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
+    categoria = db.Column(db.String(50))
+    

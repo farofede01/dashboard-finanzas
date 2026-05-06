@@ -1,76 +1,191 @@
 {% extends "base.html" %}
 {% block title %}Dashboard{% endblock %}
+
 {% block content %}
+
 <h1 class="mb-4 text-center">Resumen Financiero</h1>
 
-<h2>Ingresos</h2>
-<table class="table table-striped table-bordered text-center">
-  <thead class="table-success">
-    <tr>
-      <th>Fecha</th>
-      <th>Monto</th>
-      <th>Descripción</th>
-      <th>Acciones</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for r in ingresos %}
-    <tr>
-      <td>{{ r.fecha.strftime("%d/%m/%Y %H:%M") }}</td>
-      <td>${{ r.monto }}</td>
-      <td>{{ r.descripcion }}</td>
-      <td>
-        <a href="{{ url_for('main.editar', id=r.id) }}" class="btn btn-warning btn-sm">
-          <i class="bi bi-pencil"></i> Editar
-        </a>
-        <form action="{{ url_for('main.eliminar', id=r.id) }}" method="POST" style="display:inline;">
-          <button type="submit" class="btn btn-danger btn-sm"
-                  onclick="return confirm('¿Seguro que querés eliminar este registro?');">
-            <i class="bi bi-trash"></i> Eliminar
-          </button>
-        </form>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-<p><strong>Total Ingresos:</strong> ${{ total_ingresos }}</p>
+<!-- ====== CARDS RESUMEN ====== -->
+<div class="row text-center mb-4">
+  <div class="col-md-4">
+    <div class="card shadow-sm p-3">
+      <h5>Ingresos</h5>
+      <h3 class="text-success">${{ total_ingresos }}</h3>
+    </div>
+  </div>
 
-<h2>Gastos</h2>
-<table class="table table-striped table-bordered text-center">
-  <thead class="table-danger">
-    <tr>
-      <th>Fecha</th>
-      <th>Monto</th>
-      <th>Descripción</th>
-      <th>Acciones</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for r in gastos %}
-    <tr>
-      <td>{{ r.fecha.strftime("%d/%m/%Y %H:%M") }}</td>
-      <td>${{ r.monto }}</td>
-      <td>{{ r.descripcion }}</td>
-      <td>
-        <a href="{{ url_for('main.editar', id=r.id) }}" class="btn btn-warning btn-sm">
-          <i class="bi bi-pencil"></i> Editar
-        </a>
-        <form action="{{ url_for('main.eliminar', id=r.id) }}" method="POST" style="display:inline;">
-          <button type="submit" class="btn btn-danger btn-sm"
-                  onclick="return confirm('¿Seguro que querés eliminar este registro?');">
-            <i class="bi bi-trash"></i> Eliminar
-          </button>
-        </form>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-<p><strong>Total Gastos:</strong> ${{ total_gastos }}</p>
+  <div class="col-md-4">
+    <div class="card shadow-sm p-3">
+      <h5>Gastos</h5>
+      <h3 class="text-danger">${{ total_gastos }}</h3>
+    </div>
+  </div>
 
-<h2>Saldo Final</h2>
-<div class="alert alert-info text-center">
-  <strong>${{ saldo }}</strong>
+  <div class="col-md-4">
+    <div class="card shadow-sm p-3">
+      <h5>Saldo</h5>
+      <h3 class="{% if saldo >= 0 %}text-success{% else %}text-danger{% endif %}">
+        ${{ saldo }}
+      </h3>
+    </div>
+  </div>
 </div>
+
+<!-- ====== GRAFICOS PRINCIPALES ====== -->
+<div class="row">
+  <!-- Resumen -->
+  <div class="col-md-6">
+    <div class="card shadow-sm p-3">
+      <h5 class="text-center">Resumen</h5>
+      <canvas id="graficoResumen" style="max-height: 250px;"></canvas>
+    </div>
+  </div>
+
+  <!-- Evolución -->
+  <div class="col-md-6">
+    <div class="card shadow-sm p-3">
+      <h5 class="text-center">Evolución</h5>
+      <canvas id="graficoEvolucion" style="max-height: 250px;"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ====== TABLAS ====== -->
+<div class="row mt-4">
+  <!-- Ingresos -->
+  <div class="col-md-6">
+    <h4 class="text-center">Ingresos</h4>
+    <table class="table table-striped table-bordered text-center">
+      <thead class="table-success">
+        <tr>
+          <th>Fecha</th>
+          <th>Monto</th>
+          <th>Descripción</th>
+          <th>Categoría</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in ingresos %}
+        <tr>
+          <td>{{ r.fecha.strftime("%d/%m/%Y") }}</td>
+          <td>${{ r.monto }}</td>
+          <td>{{ r.descripcion }}</td>
+          <td>{{ r.categoria }}</td>
+          <td>
+            <a href="{{ url_for('main.editar', id=r.id) }}" class="btn btn-warning btn-sm">Editar</a>
+            <form action="{{ url_for('main.eliminar', id=r.id) }}" method="POST" style="display:inline;">
+              <button class="btn btn-danger btn-sm">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Gastos -->
+  <div class="col-md-6">
+    <h4 class="text-center">Gastos</h4>
+    <table class="table table-striped table-bordered text-center">
+      <thead class="table-danger">
+        <tr>
+          <th>Fecha</th>
+          <th>Monto</th>
+          <th>Descripción</th>
+          <th>Categoría</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in gastos %}
+        <tr>
+          <td>{{ r.fecha.strftime("%d/%m/%Y") }}</td>
+          <td>${{ r.monto }}</td>
+          <td>{{ r.descripcion }}</td>
+          <td>{{ r.categoria }}</td>
+          <td>
+            <a href="{{ url_for('main.editar', id=r.id) }}" class="btn btn-warning btn-sm">Editar</a>
+            <form action="{{ url_for('main.eliminar', id=r.id) }}" method="POST" style="display:inline;">
+              <button class="btn btn-danger btn-sm">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ====== GRAFICO CATEGORIAS (MAS CHICO Y PRO) ====== -->
+<div class="row mt-4 justify-content-center">
+  <div class="col-md-6 col-lg-5">
+    <div class="card shadow-sm p-3">
+      <h5 class="text-center">Gastos por Categoría</h5>
+      <canvas id="graficoCategorias" style="max-height: 250px;"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ====== CHART JS ====== -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  // ===== RESUMEN =====
+  new Chart(document.getElementById("graficoResumen"), {
+    type: "doughnut",
+    data: {
+      labels: ["Ingresos", "Gastos"],
+      datasets: [{
+        data: [{{ total_ingresos|default(0) }}, {{ total_gastos|default(0) }}],
+        backgroundColor: ["#198754", "#dc3545"]
+      }]
+    }
+  });
+
+  // ===== EVOLUCION =====
+  new Chart(document.getElementById("graficoEvolucion"), {
+    type: "line",
+    data: {
+      labels: {{ meses|tojson }},
+      datasets: [{
+        label: "Balance",
+        data: {{ balances|tojson }},
+        borderColor: "#0d6efd",
+        fill: false
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  });
+
+  // ===== CATEGORIAS =====
+  new Chart(document.getElementById("graficoCategorias"), {
+    type: "pie",
+    data: {
+      labels: {{ categorias|tojson }},
+      datasets: [{
+        data: {{ totales_categorias|tojson }},
+        backgroundColor: [
+          "#ff6384",
+          "#36a2eb",
+          "#ffce56",
+          "#4bc0c0",
+          "#9966ff"
+        ]
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  });
+
+});
+</script>
+
 {% endblock %}
