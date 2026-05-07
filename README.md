@@ -1,43 +1,87 @@
-Aplicación web para organizar y visualizar finanzas personales de manera intuitiva. Sirve como alternativa moderna a Excel, con formularios en español y gráficos interactivos.
+# 💰 AppFinanzas
+
+Aplicación web desarrollada con Flask para gestionar ingresos y gastos personales de manera simple, visual y segura.
 
 ---
 
-## 🚀 Características
-- Registro de ingresos, gastos y capital.
-- Formularios en español para facilidad de uso.
-- Visualización con gráficos dinámicos (Chart.js / Plotly).
-- Flash messages estilizadas con Bootstrap.
-- Plantillas reutilizables (`base.html`) para consistencia visual.
-- Código limpio y preparado para despliegue.
+# 🚀 Demo Online
+
+👉 https://appfinanzas.onrender.com
+
+(Reemplazá este link por el tuyo real de Render)
 
 ---
 
-## 📂 Estructura del proyecto
+# ✨ Características
 
-dashboard/ │── app.py │── requirements.txt │── templates/ │   ├── base.html │   ├── index.html │   ├── ingresos.html │   ├── gastos.html │   └── capital.html │── static/ │   ├── style.css │   └── charts.js
+✅ Registro de usuarios  
+✅ Inicio y cierre de sesión  
+✅ Autenticación segura con Flask-Login  
+✅ Contraseñas protegidas con Bcrypt  
+✅ Dashboard financiero interactivo  
+✅ Registro de ingresos y gastos  
+✅ Edición y eliminación de movimientos  
+✅ Categorías personalizadas  
+✅ Balance automático  
+✅ Gráficos dinámicos con Chart.js  
+✅ Diseño responsive con Bootstrap 5  
+✅ Base de datos SQLite  
 
+---
 
-## ⚙️ Instalación
-1. **Clonar el repositorio**:
-   ```bash
-   git clone https://github.com/farofede01/dashboard-finanzas.git
-   cd dashboard-finanzas
+# 📸 Capturas
 
-2. **Crear entorno virtual e instalar dependencias**:
-    python -m venv venv
-    source venv/bin/activate   # Linux/Mac
-    venv\Scripts\activate      # Windows
-    pip install -r requirements.txt
+## Dashboard
 
-3. **Ejecutar la aplicacion**
-    flask run
+![Dashboard](static/img/dashboard.png)
 
-## 🛠  Roadmap
-• 	[ ] Integrar base de datos para persistencia.
-• 	[ ] Exportar reportes en PDF/Excel.
-• 	[ ] Añadir autenticación de usuarios.
-• 	[ ] Mejorar gráficos con filtros dinámicos.
-• 	[ ] Desplegar en un servicio cloud.
+## Login
 
-## 📌 Estado
-Este proyecto está en desarrollo. Se irá mejorando de manera incremental para mostrar evolución y buenas prácticas en Flask.
+![Login](static/img/login.png)
+
+---
+
+# 🛠️ Tecnologías utilizadas
+
+- Python
+- Flask
+- Flask-Login
+- Flask-Bcrypt
+- Flask-SQLAlchemy
+- Bootstrap 5
+- Chart.js
+- SQLite
+- HTML5
+- CSS3
+
+---
+
+# 📂 Estructura del proyecto
+
+```bash
+APPFINANZAS/
+│
+├── app/
+│   ├── templates/
+│   │   ├── base.html
+│   │   ├── dashboard.html
+│   │   ├── formulario.html
+│   │   ├── editar.html
+│   │   ├── login.html
+│   │   ├── registro.html
+│   │   └── inicio.html
+│   │
+│   ├── __init__.py
+│   ├── models.py
+│   └── routes.py
+│
+├── static/
+│   └── style.css
+    └─ img
+│
+├── instance/
+│   └── finanzas.db
+│
+├── run.py
+├── requirements.txt
+└── README.md
