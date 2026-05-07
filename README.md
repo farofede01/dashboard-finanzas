@@ -6,8 +6,7 @@ Aplicación web desarrollada con Flask para gestionar ingresos y gastos personal
 
 # 🚀 Demo Online
 
-👉 https://appfinanzas.onrender.com
-
+👉 https://dashboard-finanzas-578x.onrender.com
 
 
 ## 🔑 Usuario de prueba
