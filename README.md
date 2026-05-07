@@ -8,9 +8,12 @@ Aplicación web desarrollada con Flask para gestionar ingresos y gastos personal
 
 👉 https://appfinanzas.onrender.com
 
-(Reemplazá este link por el tuyo real de Render)
 
----
+
+## 🔑 Usuario de prueba
+
+Email: demo@app.com  
+Contraseña: demo123
 
 # ✨ Características
 
@@ -85,3 +88,73 @@ APPFINANZAS/
 ├── run.py
 ├── requirements.txt
 └── README.md
+
+⚙️ Instalación local
+1️⃣ Clonar repositorio
+    git clone https://github.com/farofede01/dashboard-finanzas.git
+2️⃣ Entrar al proyecto
+    cd dashboard-finanzas
+3️⃣ Crear entorno virtual
+    Windows
+    python -m venv venv
+    venv\Scripts\activate
+    Linux / Mac
+    python3 -m venv venv
+    source venv/bin/activate
+4️⃣ Instalar dependencias
+    pip install -r requirements.txt
+5️⃣ Ejecutar aplicación
+    python run.py
+
+
+🔐 Seguridad implementada
+Contraseñas encriptadas
+Protección de rutas privadas
+Manejo seguro de sesiones
+Validación de autenticación
+Restricción de acceso a datos de otros usuarios
+
+
+📈 Funcionalidades del Dashboard
+📊 Visualización de datos
+Balance total
+Ingresos vs gastos
+Gastos por categoría
+Evolución mensual
+🧾 Gestión de movimientos
+Crear registros
+Editar registros
+Eliminar registros
+Clasificación por categorías
+
+
+🎯 Objetivo del proyecto
+
+Este proyecto fue desarrollado para practicar:
+
+Backend con Flask
+Autenticación de usuarios
+CRUD completo
+Bases de datos con SQLAlchemy
+Diseño responsive
+Visualización de información financiera
+
+
+👨‍💻 Autor
+Federico Farola
+GitHub: https://github.com/farofede01
+⭐ Estado del proyecto
+
+✅ Funcional
+✅ Responsive
+✅ Desplegado online
+✅ Ideal para portfolio
+
+📌 Próximas mejoras
+Exportar reportes PDF
+Dashboard avanzado
+Filtros inteligentes
+PostgreSQL
+API REST
+Docker
+Tests automáticos
